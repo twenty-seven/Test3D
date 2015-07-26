@@ -11,8 +11,10 @@ namespace BlobWars {
 	 *
 	 */
 	public class Blob : HealthObject {
-
-
+		// TODO: Should be remove, just used to rotate the blob correctly
+		private Quaternion offset = new Quaternion ();
+		// The minimal distance between the current position and destination, to trigger movement.
+		public double minDistance = .1;
 		// Distance the Blob walks after he is spawned (walking out of the tower)
 		public Vector3 stepOut = Vector3.zero;
 		// Differentiate between a selected Blob and an unselected Blob (navigation)
@@ -29,6 +31,8 @@ namespace BlobWars {
 		private int lerpRate = 15;
 		// Blob speed
 		public int speed = 15;
+
+		public SlimeAnim slAnim;
 		// Unique Blob Id
 		[SyncVar]
 		public string uid;
@@ -44,7 +48,7 @@ namespace BlobWars {
 		// Only sync the name, the object can be fetched later
 		[SyncVar]
 		public string towerName;
-		private GameObject tower;
+		public GameObject tower;
 
 		// Use this for initialization
 		void Start () {
@@ -53,14 +57,17 @@ namespace BlobWars {
 			nextTime = Time.time + attackSpeed;
 			uid = towerName + "." + GetComponent<NetworkIdentity> ().netId.ToString ();
 			transform.name = uid;
+			offset.y = .785f;
+			slAnim = GetComponent<SlimeAnim> ();
 			// Make sure we don't jump to (0,0,0)
 			syncPos = transform.position;
+			syncRot = transform.rotation;
 			// My commanding tower
 			tower = GameObject.Find (towerName);
-
 			// The Object steps out of the tower
 			if (Vector3.Equals(stepOut,Vector3.zero)) {
 				if (tower.transform.position.z < 0) {
+
 					stepOut = Vector3.forward * 15;
 				} else {
 					stepOut = Vector3.back * 15;
@@ -70,43 +77,73 @@ namespace BlobWars {
 			MoveTo(transform.position + stepOut);
 		}
 
+		// Maybe check for obstacle here too or create similar command function
 		[Command]
 		void CmdCheckForEnemies () {
+
 			GameObject[] Blobs = GameObject.FindGameObjectsWithTag (tag);
+
 			GameObject enemyTower;
 			// For each Blob on the field
-			for (var d = 0; d  < Blobs.Length; d++) {
-				Blob blob = Blobs [d].GetComponent<Blob> ();
-				// Skip my own blobs
-				if (blob.towerName == towerName) {
-					continue;
-				} else {
-					// Get the enemy tower if we don't know it already
+			if (nextTime < Time.time) { 
+				for (var d = 0; d  < Blobs.Length; d++) {
+					Blob blob = Blobs [d].GetComponent<Blob> ();
+					// Skip my own blobs
+					if (blob.towerName == towerName) {
+						continue;
+					} else {
+						// Get the enemy tower if we don't know it already
 
-					enemyTower = blob.tower;
-					 // If the tower is in range, attack tower.
-					if (Vector3.Distance (enemyTower.transform.position, transform.position) <= range) {
-						Debug.Log ("Attacking Tower!");
-						if (nextTime < Time.time) {
-
-							enemyTower.GetComponent<Tower>().CmdDamageObject (damage);
-							nextTime = Time.time + attackSpeed;
-						}
-					} // If tower is not in range and current blob belongs to enemy
-					else {
-						// Check if he's in range
+						enemyTower = blob.tower;
+						// If the tower is in range, attack tower.
 						if (Vector3.Distance (Blobs [d].transform.position, transform.position) <= range) {
-							if (nextTime < Time.time) {
-								blob.CmdDamageObject (damage);
-								nextTime = Time.time + attackSpeed;
-								Debug.Log ("Found Enemy in range: " + Blobs [d].transform.name);
+							// TODO: Move closer to enemy blob before attack
+							transform.LookAt (enemyTower.transform.position);
+
+							
+
+							slAnim.doAttack = true;	
+							GameObject aBall = gameObject.transform.FindChild("attackball").gameObject;
+							if (aBall != null) {
+								Debug.Log ("Found Ranged");
+								aBall.GetComponent<AttackBall>().moveTo(blob.transform.position);
+								//GameObject b= Instantiate((GameObject) aBall,aBall.transform.position,aBall.transform.rotation);
 							}
+							// TODO: Ranged attacks
+
+							// Damage is done here, including animation
+							// this would be the place to ranged attacks
+							enemyTower.GetComponent<Tower> ().CmdDamageObject (damage);
+
+							nextTime = Time.time + attackSpeed;
+							
+							break;
+						
+						} // If tower is not in range and current blob belongs to enemy
+					else {
+							// TODO: Move closer to enemy blob before attack
+							// Check if he's in range
+							if (Vector3.Distance (enemyTower.transform.position, transform.position) <= range) {
+								transform.LookAt (Blobs [d].transform.position);
+							slAnim.doAttack = true;
+							// TODO: Ranged attacks
+							// Damage is done here, including animation 
+							// this would be the place to ranged attacks
+							blob.CmdDamageObject (damage);
+
+							break;
+							}
+
+
 						}
 					} 
 
 				}
+			
 			}
 		}
+
+
 		/**
 		 * The following functions transmit the position and rotation data
 		 * from the server side Blobs to the client side blobs.
@@ -116,6 +153,7 @@ namespace BlobWars {
 			syncPos = pos;
 			syncRot = rot;
 		}
+
 		[Command]
 		void CmdTransmitPosition() {
 			TransmitPosition (transform.position, transform.rotation);
@@ -125,9 +163,10 @@ namespace BlobWars {
 		void Update () {
 			// If we're on the server, calculate movement and send it through network
 			if (isServer) {
-				StepMove ();
 				CmdTransmitPosition ();
 				CmdCheckForEnemies();
+				StepMove ();
+				// TODO: Maybe CheckForObstacles(); ?
 			} else {
 				// Else simulate movement of remote objects
 				lerpPosition ();
@@ -141,6 +180,7 @@ namespace BlobWars {
 					Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 					// If the ray actually hits something
 					if (Physics.Raycast (ray, out hit)) {
+
 						// Check if it is a blob and whether it belongs to the local Player
 						Blob b = hit.transform.GetComponent<Blob> ();
 						if (b != null && b.tower != null) {
@@ -153,6 +193,8 @@ namespace BlobWars {
 						} else if (isSelected && isClient) {
 							// A selected blob can be send to a destination
 							syncDestination = GetDestination ();
+							// it will use the stepMove function, do zour pathfinding there
+							slAnim.isWalking = true;
 							// Sends new destination to all client objects through tower
 							tower.GetComponent<Tower> ().TransmitDestination (name, syncDestination);
 							isSelected = false;
@@ -164,18 +206,38 @@ namespace BlobWars {
 
 		// Sets destination, the rest is triggered from Update
 		public void MoveTo(Vector3 location) {
+
+			if (transform.position == tower.transform.position && location == (tower.transform.position + stepOut)) {
+				tower.GetComponent<TowerAnim> ().doorsOpen = false;
+			}
 			syncDestination = location;
+
 		}
 		// Make a single step towards the target location 
 		private void StepMove () {
-			Vector3 movement = syncDestination - transform.position;
-			// Normalise the movement vector and make it proportional to the speed per second.
-			movement = movement.normalized * speed * Time.deltaTime;
-			// Move the player to it's current position plus the movement, using the rigidbody movement.
-			transform.position = transform.position + movement;
+			// If the distance is bigger than range, or I just spawned and have to leave the tower.
+			if (Vector3.Distance (transform.position, syncDestination) > minDistance) {
+				// TODO: PATHFINDING 
+				// Do your own pathfinding here
+				Vector3 movement = syncDestination - transform.position;
+				// Normalise the movement vector and make it proportional to the speed per second.
+				movement = movement.normalized * speed * Time.deltaTime;
+				// Move the player to it's current position plus the movement.
+				transform.position = transform.position + movement;
+				TurnTo(syncDestination);
+			} else {
+				// Turn off animation after you finished walking
+				slAnim.isWalking = false;
+			}
+
+
 			
 		}
-
+		void TurnTo(Vector3 point) {
+			var targetRotation = Quaternion.LookRotation (point - transform.position, Vector3.up);
+			targetRotation.y = offset.y;
+			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.0f);
+		}
 		// Returns the 3D Destination of the hit point of a ray through the current mouse position
 		Vector3 GetDestination() {
 			RaycastHit hit;
