@@ -183,11 +183,15 @@ namespace BlobWars {
 
 						// Check if it is a blob and whether it belongs to the local Player
 						Blob b = hit.transform.GetComponent<Blob> ();
+
+
 						if (b != null && b.tower != null) {
+							Tower t = b.tower.GetComponent<Tower>();
 							NetworkIdentity ni = b.tower.GetComponent<NetworkIdentity> ();
-							if (ni.isLocalPlayer) {
+							if (ni.isLocalPlayer && t.selectedBlob == "") {
 								// If so you can select the blob
 								b.isSelected = true;
+								b.tower.GetComponent<Tower>().selectedBlob = name;
 
 							}
 						} else if (isSelected && isClient) {
@@ -198,6 +202,7 @@ namespace BlobWars {
 							// Sends new destination to all client objects through tower
 							tower.GetComponent<Tower> ().TransmitDestination (name, syncDestination);
 							isSelected = false;
+							tower.GetComponent<Tower>().selectedBlob = "";
 						} 
 					}
 				}

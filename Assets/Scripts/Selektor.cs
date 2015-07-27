@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 namespace BlobWars {
 	public class Selektor : MonoBehaviour {
@@ -23,7 +24,7 @@ namespace BlobWars {
 			//get mouse position on plane and hit
 			if (Physics.Raycast (ray, out hit)) {
 				Blob b = hit.transform.GetComponent<Blob> ();
-				if (b != null && b.tower != null) {
+				if (b != null && b.tower != null && b.tower.GetComponent<NetworkIdentity>().isLocalPlayer) {
 					selector.transform.position = new Vector3(b.transform.position.x ,20 , b.transform.position.z);
 				} else {
 					selector.transform.position = new Vector3(hit.point.x, 2, hit.point.z);

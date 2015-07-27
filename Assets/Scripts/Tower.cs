@@ -20,6 +20,7 @@ namespace BlobWars {
 		public Quaternion syncRot;
 		// REMOVE TODO
 		private float spawnDelay;
+		public string selectedBlob;
 
 
 		void Start () {
