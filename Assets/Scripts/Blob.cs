@@ -37,14 +37,14 @@ namespace BlobWars {
 		[SyncVar]
 		public string uid;
 		// The rotation of the Object.
-		[SyncVar]
-		public Quaternion syncRot;
+		//[SyncVar]
+		//public Quaternion syncRot;
 		// The Location the Blob is currently traveling towards
 		[SyncVar]
 		private Vector3 syncDestination;
 		// The Location the Blob is currently at.
-		[SyncVar]
-		public Vector3 syncPos;
+		//[SyncVar]
+		//public Vector3 syncPos;
 		// Only sync the name, the object can be fetched later
 		[SyncVar]
 		public string towerName;
@@ -60,8 +60,8 @@ namespace BlobWars {
 			offset.y = .785f;
 			slAnim = GetComponent<SlimeAnim> ();
 			// Make sure we don't jump to (0,0,0)
-			syncPos = transform.position;
-			syncRot = transform.rotation;
+			//syncPos = transform.position;
+			//syncRot = transform.rotation;
 			// My commanding tower
 			tower = GameObject.Find (towerName);
 			// The Object steps out of the tower
@@ -149,28 +149,27 @@ namespace BlobWars {
 		 * from the server side Blobs to the client side blobs.
 		 */
 		[Client]
-		void TransmitPosition(Vector3 pos, Quaternion rot) {
-			syncPos = pos;
-			syncRot = rot;
+		void TransmitDestination(Vector3 pos) {
+			syncDestination = pos;
 		}
 
 		[Command]
-		void CmdTransmitPosition() {
-			TransmitPosition (transform.position, transform.rotation);
+		void CmdTransmitDestination() {
+			TransmitDestination (syncDestination);
 		}
 
 		// Update is called once per frame
 		void Update () {
 			// If we're on the server, calculate movement and send it through network
-			if (isServer) {
-				CmdTransmitPosition ();
-				CmdCheckForEnemies();
+			//if (isServer) {
+				//CmdTransmitPosition ();
+				//CmdCheckForEnemies();
 				StepMove ();
 				// TODO: Maybe CheckForObstacles(); ?
-			} else {
+			//} else {
 				// Else simulate movement of remote objects
-				lerpPosition ();
-			}
+				//lerpPosition ();
+			//}
 			// If it's not the server 
 			/*if (isClient) {
 				// and someone clicks
@@ -211,7 +210,13 @@ namespace BlobWars {
 				tower.GetComponent<TowerAnim> ().doorsOpen = false;
 			}
 			syncDestination = location;
+			if (isServer) {
+				CmdTransmitDestination ();
+			} else {
+				tower.GetComponent<Tower>().TransmitDestination(name, syncDestination);
+			}
 		}
+		
 
 		// Make a single step towards the target location 
 		private void StepMove () {
@@ -242,8 +247,9 @@ namespace BlobWars {
 			targetRotation.y = offset.y;
 			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.0f);
 		}
+
 		// Returns the 3D Destination of the hit point of a ray through the current mouse position
-		Vector3 GetDestination() {
+		/*Vector3 GetDestination() {
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			
@@ -255,14 +261,15 @@ namespace BlobWars {
 				return destination;
 			} 
 			return transform.position;
-		}
+		}*/
+
 		// Smooth out movement
-		void lerpPosition() {
+		/*void lerpPosition() {
 			if (!tower.GetComponent<NetworkIdentity>().isLocalPlayer) {
 				//Debug.Log ("Moving towards " + synPos);
 				transform.position = Vector3.Lerp (transform.position, syncPos, Time.deltaTime * lerpRate);
 				transform.rotation = Quaternion.Lerp (transform.rotation, syncRot, Time.deltaTime * lerpRate);
 			}
-		}
+		}*/
 	}
 }
