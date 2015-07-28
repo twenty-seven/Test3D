@@ -4,7 +4,8 @@ using UnityEngine.Networking;
 namespace BlobWars {
 	public class Tower : HealthObject {
 		// Soldier Prefabs that are used to spawn soldiers
-		public GameObject Fighter, Ranged, Artillery;
+		public GameObject Fighter, Ranged, Artillery, Selector;
+		private GameObject selector;
 		[SyncVar]
 		public string uid;
 		// Maximum Number of Soldiers
@@ -48,6 +49,10 @@ namespace BlobWars {
 				}
 			}
 			spawnDelay = Time.time + 2f;
+			selector = (GameObject) Instantiate(Selector, transform.position, Quaternion.identity);
+		
+			selector.GetComponent<Selector> ().towerUID = transform.name;
+
 		}
 		
 		

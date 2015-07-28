@@ -28,7 +28,7 @@ namespace BlobWars {
 		// Private placeholder for speed treshold
 		private float nextTime;
 		// Synchronization smoothing
-		private int lerpRate = 15;
+		private int lerpRate = 5;
 		// Blob speed
 		public int speed = 15;
 
@@ -163,9 +163,9 @@ namespace BlobWars {
 		void Update () {
 			// If we're on the server, calculate movement and send it through network
 			if (isServer) {
+				StepMove ();
 				CmdTransmitPosition ();
 				CmdCheckForEnemies();
-				StepMove ();
 				// TODO: Maybe CheckForObstacles(); ?
 			} else {
 				// Else simulate movement of remote objects
@@ -210,6 +210,7 @@ namespace BlobWars {
 			if (transform.position == tower.transform.position && location == (tower.transform.position + stepOut)) {
 				tower.GetComponent<TowerAnim> ().doorsOpen = false;
 			}
+			slAnim.isWalking = true;
 			syncDestination = location;
 		}
 

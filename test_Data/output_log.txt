@@ -1,35 +1,30 @@
 Initialize engine version: 5.1.2f1 (afd2369b692a)
 GfxDevice: creating device client; threaded=1
 Direct3D:
-    Version:  Direct3D 11.0 [level 10.1]
-    Renderer: Intel(R) HD Graphics 3000 (ID=0x116)
-    Vendor:   Intel
-    VRAM:     128 MB
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 770 (ID=0x1184)
+    Vendor:   NVIDIA
+    VRAM:     1990 MB
 Begin MonoManager ReloadAssembly
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
-Loading C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.538 seconds
-desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.053 seconds
+desktop: 1920x1080 60Hz; virtual: 3840x1080 at -1920,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: C:\Users\Felix\Desktop\Test3D-slave\test_Data\Managed\System.dll (this message is harmless)
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.dll (this message is harmless)
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 1618 -> priority: 1 
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-UNet Client Disconnect Error: Timeout
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
-
+  Thread -> id: 19b0 -> priority: 1 
 Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
 UNet Client Disconnect Error: Timeout
  
