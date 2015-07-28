@@ -96,17 +96,14 @@ namespace BlobWars {
 
 						enemyTower = blob.tower;
 						// If the tower is in range, attack tower.
-						if (Vector3.Distance (Blobs [d].transform.position, transform.position) <= range) {
+						if (Vector3.Distance (blob.transform.position, transform.position) <= range) {
 							// TODO: Move closer to enemy blob before attack
 							transform.LookAt (enemyTower.transform.position);
-
-							
 
 							slAnim.doAttack = true;	
 							GameObject aBall = gameObject.transform.FindChild("attackball").gameObject;
 							if (aBall != null) {
 								Debug.Log ("Found Ranged");
-								aBall.GetComponent<AttackBall>().moveTo(blob.transform.position);
 								//GameObject b= Instantiate((GameObject) aBall,aBall.transform.position,aBall.transform.rotation);
 							}
 							// TODO: Ranged attacks
@@ -205,6 +202,10 @@ namespace BlobWars {
 							tower.GetComponent<Tower>().selectedBlob = "";
 						} 
 					}
+				}
+				if (Input.GetKey("j")) {
+					if (GetComponentInChildren<AttackBall>() != null)
+						GetComponentInChildren<AttackBall>().shootAt(Vector3.zero);
 				}
 			}
 		}
