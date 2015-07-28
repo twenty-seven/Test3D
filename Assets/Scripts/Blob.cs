@@ -18,7 +18,7 @@ namespace BlobWars {
 		// Distance the Blob walks after he is spawned (walking out of the tower)
 		public Vector3 stepOut = Vector3.zero;
 		// Differentiate between a selected Blob and an unselected Blob (navigation)
-		private bool isSelected = false;
+		public bool isSelected = false;
 		// Damage the blob does to other blobs
 		public int damage = 5;
 		// Range over which the blob can attack other blobs
@@ -172,7 +172,7 @@ namespace BlobWars {
 				lerpPosition ();
 			}
 			// If it's not the server 
-			if (isClient) {
+			/*if (isClient) {
 				// and someone clicks
 				if (Input.GetKey ("mouse 0")) {
 					// Check if the object that was hit belongs to us
@@ -197,11 +197,11 @@ namespace BlobWars {
 							slAnim.isWalking = true;
 							// Sends new destination to all client objects through tower
 							tower.GetComponent<Tower> ().TransmitDestination (name, syncDestination);
-							isSelected = false;
-						} 
+							//isSelected = false;
+						}
 					}
 				}
-			}
+			}*/
 		}
 
 		// Sets destination, the rest is triggered from Update
@@ -211,8 +211,8 @@ namespace BlobWars {
 				tower.GetComponent<TowerAnim> ().doorsOpen = false;
 			}
 			syncDestination = location;
-
 		}
+
 		// Make a single step towards the target location 
 		private void StepMove () {
 			// If the distance is bigger than range, or I just spawned and have to leave the tower.
@@ -220,6 +220,10 @@ namespace BlobWars {
 				// TODO: PATHFINDING 
 				// Do your own pathfinding here
 				Vector3 movement = syncDestination - transform.position;
+
+				if(Mathf.Abs(movement.x) > 0.2 || Mathf.Abs(movement.z) > 0.2) {
+					slAnim.isWalking = true;
+				}
 				// Normalise the movement vector and make it proportional to the speed per second.
 				movement = movement.normalized * speed * Time.deltaTime;
 				// Move the player to it's current position plus the movement.
