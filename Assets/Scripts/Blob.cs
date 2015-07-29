@@ -11,14 +11,10 @@ namespace BlobWars {
 	 *
 	 */
 	public class Blob : HealthObject {
-		// TODO: Should be remove, just used to rotate the blob correctly
-		private Quaternion offset = new Quaternion ();
 		// The minimal distance between the current position and destination, to trigger movement.
-		public double minDistance = .1;
+		public float minDistance;
 		// Distance the Blob walks after he is spawned (walking out of the tower)
 		public Vector3 stepOut = Vector3.zero;
-		// Differentiate between a selected Blob and an unselected Blob (navigation)
-		public bool isSelected = false;
 		// Damage the blob does to other blobs
 		public int damage = 5;
 		// Range over which the blob can attack other blobs
@@ -57,7 +53,6 @@ namespace BlobWars {
 			nextTime = Time.time + attackSpeed;
 			uid = towerName + "." + GetComponent<NetworkIdentity> ().netId.ToString ();
 			transform.name = uid;
-			offset.y = .785f;
 			slAnim = GetComponent<SlimeAnim> ();
 			// Make sure we don't jump to (0,0,0)
 			syncPos = transform.position;
@@ -80,7 +75,6 @@ namespace BlobWars {
 		// Maybe check for obstacle here too or create similar command function
 		[Command]
 		void CmdCheckForEnemies () {
-
 			GameObject[] Blobs = GameObject.FindGameObjectsWithTag (tag);
 
 			GameObject enemyTower;
@@ -217,14 +211,28 @@ namespace BlobWars {
 		// Make a single step towards the target location 
 		private void StepMove () {
 			// If the distance is bigger than range, or I just spawned and have to leave the tower.
+			Animator anim;
+			Vector3 pos;
+			if ((anim = GetComponent<Animator> ()) != null) {
+				pos = transform.position + anim.bodyPosition;
+				Debug.Log ("Anim: " + anim.rootPosition);
+			} else {
+				pos = transform.position;
+			}
+			Debug.Log ("Position: " + transform.position + " Pos: " + pos);
+
+			pos.y = 0;
+
 			if (Vector3.Distance (transform.position, syncDestination) > minDistance) {
+				Debug.Log ("Checking Distance: " + Vector3.Distance (transform.position, syncDestination));
+				Debug.Log ("Of: " + transform.position + " and " + syncDestination);
+				Debug.Log ("Against: " + minDistance);
+				Debug.Log ("Failed");
 				// TODO: PATHFINDING 
 				// Do your own pathfinding here
 				Vector3 movement = syncDestination - transform.position;
 
-				if(Mathf.Abs(movement.x) > 0.2 || Mathf.Abs(movement.z) > 0.2) {
 					slAnim.isWalking = true;
-				}
 				// Normalise the movement vector and make it proportional to the speed per second.
 				movement = movement.normalized * speed * Time.deltaTime;
 				// Move the player to it's current position plus the movement.
@@ -240,7 +248,6 @@ namespace BlobWars {
 		}
 		void TurnTo(Vector3 point) {
 			var targetRotation = Quaternion.LookRotation (point - transform.position, Vector3.up);
-			targetRotation.y = offset.y;
 			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.0f);
 		}
 		// Returns the 3D Destination of the hit point of a ray through the current mouse position
@@ -265,5 +272,6 @@ namespace BlobWars {
 				transform.rotation = Quaternion.Lerp (transform.rotation, syncRot, Time.deltaTime * lerpRate);
 			}
 		}
+	
 	}
 }

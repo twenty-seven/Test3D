@@ -33,9 +33,9 @@ namespace BlobWars {
 
 				//get mouse position on plane and hit
 				if (Physics.Raycast (ray, out hit)) {
-					Vector3 location = new Vector3 (hit.point.x, hit.point.y, hit.point.z);
-
-					if (hit.transform.GetComponent<Blob>() != null) {
+					Vector3 location = new Vector3 (hit.point.x, hit.point.y + 5, hit.point.z);
+					Blob b = hit.transform.GetComponent<Blob> ();
+					if (b != null && b.towerName == towerUID) {
 						location.y += 10;
 					}
 					transform.position = location;

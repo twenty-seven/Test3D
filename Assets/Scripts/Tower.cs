@@ -6,19 +6,12 @@ namespace BlobWars {
 		// Soldier Prefabs that are used to spawn soldiers
 		public GameObject Fighter, Ranged, Artillery, Selector;
 		private GameObject selector;
-		[SyncVar]
 		public string uid;
 		// Maximum Number of Soldiers
 		public int maxSoldiers = 2;
 		// Current Number of Soldiers
 		[SyncVar]
 		public int numSoldiers = 0;
-		// Variable for position
-		[SyncVar]
-		public Vector3 syncPos;
-		// Variable for rotation
-		[SyncVar] 
-		public Quaternion syncRot;
 		// REMOVE TODO
 		private float spawnDelay;
 
@@ -26,7 +19,6 @@ namespace BlobWars {
 		void Start () {
 			currentHealth = maxHealth;
 			// Setup SyncPosition 
-			syncPos = transform.position;
 			// Create 'unique' name for tower
 			uid = "Player" + GetComponent<NetworkIdentity>().netId;
 			gameObject.transform.name = uid;
@@ -49,9 +41,10 @@ namespace BlobWars {
 				}
 			}
 			spawnDelay = Time.time + 2f;
-			selector = (GameObject) Instantiate(Selector, transform.position, Quaternion.identity);
-		
-			selector.GetComponent<Selector> ().towerUID = transform.name;
+			if (isLocalPlayer) {
+				selector = (GameObject)Instantiate (Selector, transform.position, Quaternion.identity);
+				selector.GetComponent<Selector> ().towerUID = transform.name;
+			}
 
 		}
 		

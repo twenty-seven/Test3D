@@ -24,7 +24,37 @@ desktop: 1920x1080 60Hz; virtual: 3840x1080 at -1920,0
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.dll (this message is harmless)
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 19b0 -> priority: 1 
+  Thread -> id: 1078 -> priority: 1 
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+UNet Client Disconnect Error: Timeout
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
 Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
 UNet Client Disconnect Error: Timeout
  
