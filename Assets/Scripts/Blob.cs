@@ -12,13 +12,13 @@ namespace BlobWars {
 	 */
 	public class Blob : HealthObject {
 		// TODO: Should be remove, just used to rotate the blob correctly
-		private Quaternion offset = new Quaternion ();
+		//private Quaternion offset = new Quaternion ();
 		// The minimal distance between the current position and destination, to trigger movement.
-		public double minDistance = .1;
+		public double minDistance = .2;
 		// Distance the Blob walks after he is spawned (walking out of the tower)
 		public Vector3 stepOut = Vector3.zero;
 		// Differentiate between a selected Blob and an unselected Blob (navigation)
-		private bool isSelected = false;
+		public bool isSelected = false;
 		// Damage the blob does to other blobs
 		public int damage = 5;
 		// Range over which the blob can attack other blobs
@@ -28,7 +28,7 @@ namespace BlobWars {
 		// Private placeholder for speed treshold
 		private float nextTime;
 		// Synchronization smoothing
-		private int lerpRate = 15;
+		private int lerpRate = 5;
 		// Blob speed
 		public int speed = 15;
 
@@ -50,14 +50,19 @@ namespace BlobWars {
 		public string towerName;
 		public GameObject tower;
 
+		//Audio
+		public AudioClip atkAudio;
+		public AudioClip moveAudio;
+
 		// Use this for initialization
 		void Start () {
+			base.Start ();
 			// Set up unique ID, current Healthpoints and the attack speed
 			currentHealth = maxHealth;
 			nextTime = Time.time + attackSpeed;
 			uid = towerName + "." + GetComponent<NetworkIdentity> ().netId.ToString ();
 			transform.name = uid;
-			offset.y = .785f;
+			//offset.y = .785f;
 			slAnim = GetComponent<SlimeAnim> ();
 			// Make sure we don't jump to (0,0,0)
 			syncPos = transform.position;
@@ -68,11 +73,12 @@ namespace BlobWars {
 			if (Vector3.Equals(stepOut,Vector3.zero)) {
 				if (tower.transform.position.z < 0) {
 
-					stepOut = Vector3.forward * 15;
+					stepOut = Vector3.forward * 100;
 				} else {
-					stepOut = Vector3.back * 15;
+					stepOut = Vector3.back * 100;
 				}
 			}
+
 			// Make the object move
 			MoveTo(transform.position + stepOut);
 		}
@@ -96,14 +102,17 @@ namespace BlobWars {
 
 						enemyTower = blob.tower;
 						// If the tower is in range, attack tower.
-						if (Vector3.Distance (blob.transform.position, transform.position) <= range) {
+						if (Vector3.Distance (Blobs [d].transform.position, transform.position) <= range) {
 							// TODO: Move closer to enemy blob before attack
 							transform.LookAt (enemyTower.transform.position);
+
+							
 
 							slAnim.doAttack = true;	
 							GameObject aBall = gameObject.transform.FindChild("attackball").gameObject;
 							if (aBall != null) {
 								Debug.Log ("Found Ranged");
+								aBall.GetComponent<AttackBall>().moveTo(blob.transform.position);
 								//GameObject b= Instantiate((GameObject) aBall,aBall.transform.position,aBall.transform.rotation);
 							}
 							// TODO: Ranged attacks
@@ -122,13 +131,15 @@ namespace BlobWars {
 							// Check if he's in range
 							if (Vector3.Distance (enemyTower.transform.position, transform.position) <= range) {
 								transform.LookAt (Blobs [d].transform.position);
-							slAnim.doAttack = true;
-							// TODO: Ranged attacks
-							// Damage is done here, including animation 
-							// this would be the place to ranged attacks
-							blob.CmdDamageObject (damage);
 
-							break;
+								slAnim.doAttack = true;
+								aSource.PlayOneShot(atkAudio);
+								// TODO: Ranged attacks
+								// Damage is done here, including animation 
+								// this would be the place to ranged attacks
+								blob.CmdDamageObject (damage);
+
+								break;
 							}
 
 
@@ -160,16 +171,16 @@ namespace BlobWars {
 		void Update () {
 			// If we're on the server, calculate movement and send it through network
 			if (isServer) {
+				StepMove ();
 				CmdTransmitPosition ();
 				CmdCheckForEnemies();
-				StepMove ();
 				// TODO: Maybe CheckForObstacles(); ?
 			} else {
 				// Else simulate movement of remote objects
 				lerpPosition ();
 			}
 			// If it's not the server 
-			if (isClient) {
+			/*if (isClient) {
 				// and someone clicks
 				if (Input.GetKey ("mouse 0")) {
 					// Check if the object that was hit belongs to us
@@ -180,15 +191,11 @@ namespace BlobWars {
 
 						// Check if it is a blob and whether it belongs to the local Player
 						Blob b = hit.transform.GetComponent<Blob> ();
-
-
 						if (b != null && b.tower != null) {
-							Tower t = b.tower.GetComponent<Tower>();
 							NetworkIdentity ni = b.tower.GetComponent<NetworkIdentity> ();
-							if (ni.isLocalPlayer && t.selectedBlob == "") {
+							if (ni.isLocalPlayer) {
 								// If so you can select the blob
 								b.isSelected = true;
-								b.tower.GetComponent<Tower>().selectedBlob = name;
 
 							}
 						} else if (isSelected && isClient) {
@@ -198,16 +205,11 @@ namespace BlobWars {
 							slAnim.isWalking = true;
 							// Sends new destination to all client objects through tower
 							tower.GetComponent<Tower> ().TransmitDestination (name, syncDestination);
-							isSelected = false;
-							tower.GetComponent<Tower>().selectedBlob = "";
-						} 
+							//isSelected = false;
+						}
 					}
 				}
-				if (Input.GetKey("j")) {
-					if (GetComponentInChildren<AttackBall>() != null)
-						GetComponentInChildren<AttackBall>().shootAt(Vector3.zero);
-				}
-			}
+			}*/
 		}
 
 		// Sets destination, the rest is triggered from Update
@@ -216,9 +218,10 @@ namespace BlobWars {
 			if (transform.position == tower.transform.position && location == (tower.transform.position + stepOut)) {
 				tower.GetComponent<TowerAnim> ().doorsOpen = false;
 			}
+			slAnim.isWalking = true;
 			syncDestination = location;
-
 		}
+
 		// Make a single step towards the target location 
 		private void StepMove () {
 			// If the distance is bigger than range, or I just spawned and have to leave the tower.
@@ -226,10 +229,17 @@ namespace BlobWars {
 				// TODO: PATHFINDING 
 				// Do your own pathfinding here
 				Vector3 movement = syncDestination - transform.position;
+
+				if(Mathf.Abs(movement.x) > 0.2 || Mathf.Abs(movement.z) > 0.2) {
+					slAnim.isWalking = true;
+				}
+
 				// Normalise the movement vector and make it proportional to the speed per second.
 				movement = movement.normalized * speed * Time.deltaTime;
+
 				// Move the player to it's current position plus the movement.
 				transform.position = transform.position + movement;
+
 				TurnTo(syncDestination);
 			} else {
 				// Turn off animation after you finished walking
@@ -241,7 +251,7 @@ namespace BlobWars {
 		}
 		void TurnTo(Vector3 point) {
 			var targetRotation = Quaternion.LookRotation (point - transform.position, Vector3.up);
-			targetRotation.y = offset.y;
+			//targetRotation.y = offset.y;
 			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2.0f);
 		}
 		// Returns the 3D Destination of the hit point of a ray through the current mouse position
@@ -265,6 +275,18 @@ namespace BlobWars {
 				transform.position = Vector3.Lerp (transform.position, syncPos, Time.deltaTime * lerpRate);
 				transform.rotation = Quaternion.Lerp (transform.rotation, syncRot, Time.deltaTime * lerpRate);
 			}
+		}
+
+		void AnimationPositionFix(){
+			//apply movement done in animation to actual position.
+			//transform.position += transform.forward * GetComponent<Animator> ().deltaPosition.magnitude;
+			//transform.position += (syncDestination - transform.position).normalized * speed * Mathf.Abs(GetComponent<Animator>().deltaPosition.magnitude);
+		}
+
+		//trigger this via animation event
+		void PlayMoveAudio() {
+			//play audio for movement once
+			aSource.PlayOneShot (moveAudio);
 		}
 	}
 }

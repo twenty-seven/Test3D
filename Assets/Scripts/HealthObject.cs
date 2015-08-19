@@ -16,16 +16,27 @@ namespace BlobWars {
 		// The current health
 		[SyncVar] public float currentHealth;
 
+		//audio
+		protected AudioSource aSource;
+		public AudioClip getHitAudio;
+		public AudioClip dieAudio;
+
+		public void Start() {
+			aSource = GetComponent<AudioSource> ();
+		}
+
 		// Calculates Damage on the Server and distributes it accordingly
 		[Command]
 		public void CmdDamageObject(int damage) {
 
 			Debug.Log (currentHealth);
 			if (currentHealth - damage > 0) {
+				aSource.PlayOneShot(getHitAudio);
 				currentHealth -= damage;
 				CmdTransmitHealth();
 			} else {
-				
+				aSource.PlayOneShot(dieAudio);
+
 				// TODO: Trigger animation before destruction?
 				killObject(name);
 			}

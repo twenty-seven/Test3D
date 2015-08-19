@@ -1,10 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+
 namespace BlobWars {
 	public class Tower : HealthObject {
 		// Soldier Prefabs that are used to spawn soldiers
-		public GameObject Fighter, Ranged, Artillery;
+		public GameObject Fighter, Ranged, Artillery, Selector;
+		private GameObject selector;
 		[SyncVar]
 		public string uid;
 		// Maximum Number of Soldiers
@@ -20,20 +23,22 @@ namespace BlobWars {
 		public Quaternion syncRot;
 		// REMOVE TODO
 		private float spawnDelay;
-		public string selectedBlob;
 
-
+		//Audio
+		public AudioClip openDoorAudio;
+		
 		void Start () {
+			base.Start ();
 			currentHealth = maxHealth;
 			// Setup SyncPosition 
 			syncPos = transform.position;
 			// Create 'unique' name for tower
 			uid = "Player" + GetComponent<NetworkIdentity>().netId;
 			gameObject.transform.name = uid;
-			Camera serverCam = GameObject.Find ("Server Camera").GetComponent<Camera>();
-			Camera clientCam = GameObject.Find ("Client Camera").GetComponent<Camera>();
+			//Camera serverCam = GameObject.Find ("Server Camera").GetComponent<Camera>();
+			//Camera clientCam = GameObject.Find ("Client Camera").GetComponent<Camera>();
 			// Handle Cameras for host
-			if (isServer && isClient) {
+			/*if (isServer && isClient) {
 				if (serverCam != null) {
 					serverCam.enabled = true;
 				}
@@ -47,16 +52,39 @@ namespace BlobWars {
 				if (clientCam != null) {
 					clientCam.enabled = true;
 				}
-			}
-			spawnDelay = Time.time + 2f;
+			}*/
+			spawnDelay = Time.time + 5f;
+			selector = (GameObject) Instantiate(Selector, transform.position, Quaternion.identity);
+			selector.transform.parent = GameObject.Find("ImageTarget").transform;
+			selector.GetComponent<Selector> ().towerUID = transform.name;
+
+			Button selectBtn = GameObject.Find("selBtn").GetComponent<Button>();
+			selectBtn.interactable = true;
+			
+			//add selection trigger function to the button.
+			selectBtn.onClick.AddListener (()=>{
+				selector.GetComponent<Selector>().TriggerSelect();
+			});
 		}
 		
-		
+		//TODO: remove this var when done testing
+		private int soldierTypeTester = 0;
 		// Update is called once per frame
 		void FixedUpdate () {
+			//TODO: change to actual spawning behaviour ... this is for testing.
+			//spawn soldier when there is space ... go through types :)
+			soldierTypeTester++;
+			if (soldierTypeTester > 2) {
+				soldierTypeTester = 0;
+			}
+			if (Time.time > spawnDelay) {
+				spawnSoldier(soldierTypeTester);
+				spawnDelay = Time.time + 5f;
+			}
+
 			// If you click on your tower, a new unit spawns
 			// No Position synchronization necessary
-			if (Input.GetKeyDown("w")) {
+			/*if (Input.GetKeyDown("w")) {
 				//if(hitMe()) {
 				if (isLocalPlayer && Time.time > spawnDelay){
 					
@@ -81,7 +109,7 @@ namespace BlobWars {
 					spawnDelay = Time.time + 2f;
 				}
 				//}
-			}
+			}*/
 		}
 
 		// Client call to spawn a soldier on the server
@@ -119,6 +147,7 @@ namespace BlobWars {
 			}
 			GameObject blob = (GameObject)Instantiate (prefab, location, Quaternion.identity);
 			blob.GetComponent<Blob> ().towerName = towerName;
+			blob.transform.SetParent (GameObject.Find ("ImageTarget").transform);
 			numSoldiers++;
 			Debug.Log ("Spawning " + blobName + " of tower " + towerName + " at " + location);
 

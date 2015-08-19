@@ -16,21 +16,86 @@ Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Dat
 Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\Qualcomm.Vuforia.UnityExtensions.dll (this message is harmless)
+Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\Qualcomm.Vuforia.UnityExtensions.dll into Unity Child Domain
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
 Loading D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-- Completed reload, in  0.062 seconds
+- Completed reload, in  0.060 seconds
 desktop: 1920x1080 60Hz; virtual: 3840x1080 at -1920,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\Documents\universitaet\2015 SS\VR\gorillar\Test3D\test_Data\Managed\System.dll (this message is harmless)
+Setting BehaviourComponentFactory
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+QCAR initialization successful
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Could not initialize the tracker.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Could not initialize the tracker.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+SetHint
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+SetHint
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+SetHint
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Dataset ARMaster could not be loaded and cannot be activated.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+StartQCAR
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Using default scene scale for device: 1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Trackable mainmarker lost
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 1910 -> priority: 1 
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-UNet Client Disconnect Error: Timeout
+  Thread -> id: 12bc -> priority: 1 
+Spawning Player1.0 of tower Player1 at (82.1, 0.0, -494.3)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Spawning Player1.0 of tower Player1 at (82.1, 0.0, -494.3)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Spawning Player3.0 of tower Player3 at (-230.2, 0.0, 664.1)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Spawning Player3.0 of tower Player3 at (-230.2, 0.0, 664.1)
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Trackable mainmarker lost
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+StopQCAR
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
 
