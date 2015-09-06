@@ -23,6 +23,7 @@ namespace BlobWars {
 
 		public void Start() {
 			aSource = GetComponent<AudioSource> ();
+
 		}
 
 		// Calculates Damage on the Server and distributes it accordingly
@@ -33,11 +34,11 @@ namespace BlobWars {
 			if (currentHealth - damage > 0) {
 				aSource.PlayOneShot(getHitAudio);
 				currentHealth -= damage;
-				CmdTransmitHealth();
+				//CmdTransmitHealth();
 			} else {
 				aSource.PlayOneShot(dieAudio);
 
-				// TODO: Trigger animation before destruction?
+				// TODO: Trigger animation before destruction? || Gets triggerd in CmdKillObject
 				killObject(name);
 			}
 		}
@@ -50,12 +51,13 @@ namespace BlobWars {
 		void CmdKillObject(string uid) {
 			GameObject g = GameObject.Find (uid);
 			if (g != null && g.GetComponent<Blob> () != null) {
+
 				g.GetComponent<SlimeAnim>().die = true;
+
 				Tower t = g.GetComponent<Blob> ().tower.GetComponent<Tower>();
 				t.numSoldiers = t.numSoldiers - 1;
 				Destroy (g);	
 			} else if (g.GetComponent<Tower> () != null) {
-				g.GetComponent<TowerAnim>().currentTowerHealth = 0;
 				Destroy (g);
 				// End Game
 			}

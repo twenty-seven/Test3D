@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class SlimeAnim : MonoBehaviour {
+public class SlimeAnim : NetworkBehaviour {
 
 	Animator anim;
 
 	public GameObject[] deactivateOnDeathObjects;
 	public ParticleSystem deathParticleSystem;
-
+	[SyncVar]
 	public bool isWalking = false;
+	[SyncVar]
 	public bool doAttack = false;
+	[SyncVar]
 	public bool die = false;
 
 	void Start () {

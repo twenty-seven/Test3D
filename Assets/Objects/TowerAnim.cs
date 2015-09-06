@@ -22,9 +22,10 @@ public class TowerAnim : MonoBehaviour {
 	Animator break16Anim;
 	Animator break17Anim;
 	Animator break18Anim;
-	
-	public float maxTowerHealth = 100.0f;
-	public float currentTowerHealth = 100.0f;
+
+	// Gets set through the corresponding blob/tower value
+	private float maxTowerHealth = 100.0f;
+	private float currentTowerHealth = 100.0f;
 	
 	bool broken1 = false;
 	bool broken2 = false;
@@ -33,12 +34,12 @@ public class TowerAnim : MonoBehaviour {
 	bool broken5 = false;
 	bool broken6 = false;
 	bool broken7 = false;
-	bool broken8 = false;
+	bool broken8 = false; 
 	bool broken9 = false;
 	bool broken10 = false;
 	bool broken11 = false;
 	bool broken12 = false;
-	bool broken13 = false;
+	bool broken13 = false; 
 	bool broken14 = false;
 	bool broken15 = false;
 	bool broken16 = false;
@@ -72,6 +73,9 @@ public class TowerAnim : MonoBehaviour {
 		doorsAnim = GameObject.Find("doors_Anim").GetComponent<Animator> ();
 		doorsAnim.SetBool("doorsOpen", false);
 		h = GetComponent<BlobWars.HealthObject> ();
+		maxTowerHealth = h.maxHealth;
+		currentTowerHealth = h.maxHealth;
+
 
 	}
 
@@ -187,7 +191,6 @@ public class TowerAnim : MonoBehaviour {
 		break17Anim.SetTrigger("break");
 		break18Anim.SetTrigger("break");
 		*/
-
 		if (doorsOpen) {
 			openDoors();
 		} else {

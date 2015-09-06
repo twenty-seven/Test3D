@@ -8,30 +8,20 @@ namespace BlobWars {
 		// Soldier Prefabs that are used to spawn soldiers
 		public GameObject Fighter, Ranged, Artillery, Selector;
 		private GameObject selector;
-		[SyncVar]
 		public string uid;
 		// Maximum Number of Soldiers
-		public int maxSoldiers = 2;
+		public int maxSoldiers = 1;
 		// Current Number of Soldiers
 		[SyncVar]
 		public int numSoldiers = 0;
-		// Variable for position
-		[SyncVar]
-		public Vector3 syncPos;
-		// Variable for rotation
-		[SyncVar] 
-		public Quaternion syncRot;
 		// REMOVE TODO
 		private float spawnDelay;
+		private float spawnDelayValue = 5f;
 
 		//Audio
 		public AudioClip openDoorAudio;
-		
 		void Start () {
-			base.Start ();
-			currentHealth = maxHealth;
-			// Setup SyncPosition 
-			syncPos = transform.position;
+			GetComponent<HealthObject>().currentHealth = GetComponent<HealthObject>().maxHealth;
 			// Create 'unique' name for tower
 			uid = "Player" + GetComponent<NetworkIdentity>().netId;
 			gameObject.transform.name = uid;
@@ -53,18 +43,29 @@ namespace BlobWars {
 					clientCam.enabled = true;
 				}
 			}*/
-			spawnDelay = Time.time + 5f;
-			selector = (GameObject) Instantiate(Selector, transform.position, Quaternion.identity);
-			selector.transform.parent = GameObject.Find("ImageTarget").transform;
-			selector.GetComponent<Selector> ().towerUID = transform.name;
+			spawnDelay = Time.time + spawnDelayValue;
+			if (isLocalPlayer) {
+				Debug.Log ("Local Tower Spawned." + transform.name);
+				selector = (GameObject)Instantiate (Selector, transform.position, Quaternion.identity);
+				selector.GetComponent<Selector> ().towerUID = transform.name;
+				GameObject imgTarget = GameObject.Find ("ImageTarget");
+				if (imgTarget != null) {
+					selector.transform.parent = imgTarget.transform;
+				}
 
-			Button selectBtn = GameObject.Find("selBtn").GetComponent<Button>();
-			selectBtn.interactable = true;
-			
-			//add selection trigger function to the button.
-			selectBtn.onClick.AddListener (()=>{
-				selector.GetComponent<Selector>().TriggerSelect();
-			});
+
+				GameObject selectBtn = GameObject.Find ("selBtn");
+				if (selectBtn != null) {
+					selectBtn.GetComponent<Button> ().interactable = true;
+					// add selection trigger function to the button.
+					selectBtn.GetComponent<Button> ().onClick.AddListener (() => {
+						selector.GetComponent<Selector> ().TriggerSelect ();
+					});
+				}
+			} else {
+				Debug.Log ("Remote Tower Spawned.");
+			}
+			base.Start ();
 		}
 		
 		//TODO: remove this var when done testing
@@ -73,13 +74,18 @@ namespace BlobWars {
 		void FixedUpdate () {
 			//TODO: change to actual spawning behaviour ... this is for testing.
 			//spawn soldier when there is space ... go through types :)
-			soldierTypeTester++;
-			if (soldierTypeTester > 2) {
-				soldierTypeTester = 0;
-			}
-			if (Time.time > spawnDelay) {
-				spawnSoldier(soldierTypeTester);
-				spawnDelay = Time.time + 5f;
+			if (isServer) {
+				soldierTypeTester++;
+				if (soldierTypeTester > 2) {
+					soldierTypeTester = 0;
+				}
+				if (Time.time > spawnDelay) {
+					CmdSpawnSoldier (soldierTypeTester, transform.position);
+
+						GetComponent<Animator>().SetBool("DoorsOpen",true);
+					spawnDelay = Time.time + spawnDelayValue;
+				}
+
 			}
 
 			// If you click on your tower, a new unit spawns
@@ -111,13 +117,10 @@ namespace BlobWars {
 				//}
 			}*/
 		}
-
-		// Client call to spawn a soldier on the server
-		[Client]
-		void spawnSoldier(int type) {
+		// Spawns a soldier on the server
+		[Command]
+		void CmdSpawnSoldier(int type, Vector3 location) {
 			if (numSoldiers < maxSoldiers) {
-				GetComponent<TowerAnim>().doorsOpen = true;
-				// Get unique name for blob
 				string blobName = uid + "." + 0;
 				for (int i = 0; i < maxSoldiers*5; i++) {
 					blobName = uid + "." + i;
@@ -125,33 +128,28 @@ namespace BlobWars {
 						break;
 					}
 				}
-				// Server call with towername, blob id and spawn position
-				GetComponent<TowerAnim> ().openDoors();
-				CmdSpawnSoldier (type, uid, blobName, transform.position);
+				// Create, name and spawn the object on the server
+				GameObject prefab = Fighter;
+				Debug.Log ("Spawning Soldier on Server");
+				switch (type) {
+				case 1:
+					prefab = Ranged;
+					break;
+				case 2: 
+					prefab = Artillery;
+					break;
+				}
+				GameObject blob = (GameObject)Instantiate (prefab, location, Quaternion.identity);
+				Debug.Log ("Spawning " + blobName + " of tower " + uid + " at " + location);
+				blob.GetComponent<Blob> ().towerName = uid;
+				GameObject imgTarget = GameObject.Find ("ImageTarget");
+				if (imgTarget != null) {
+					blob.transform.SetParent (imgTarget.transform);
+				}
+				numSoldiers++;
 
+				NetworkServer.Spawn (blob);
 			}
-		}
-
-		// Spawns a soldier on the server
-		[Command]
-		void CmdSpawnSoldier(int type, string towerName, string blobName, Vector3 location) {
-			// Create, name and spawn the object on the server
-			GameObject prefab = Fighter;
-			switch (type) {
-			case 1:
-				prefab = Ranged;
-				break;
-			case 2: 
-				prefab = Artillery;
-				break;
-			}
-			GameObject blob = (GameObject)Instantiate (prefab, location, Quaternion.identity);
-			blob.GetComponent<Blob> ().towerName = towerName;
-			blob.transform.SetParent (GameObject.Find ("ImageTarget").transform);
-			numSoldiers++;
-			Debug.Log ("Spawning " + blobName + " of tower " + towerName + " at " + location);
-
-			NetworkServer.Spawn (blob);
 			
 		}
 		// In case a blob changes it's destination, the tower is used to 

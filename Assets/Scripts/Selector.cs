@@ -15,9 +15,11 @@ namespace BlobWars {
 		private NetworkIdentity tNI;
 		// The last Object that was selected.
 		private GameObject lastSelection;
-
+		
+		private bool editorDebug = true;
 		// Gets spawned in the Tower.Start() methode.
 		void Start () {
+			Debug.Log ("Starting Local Selector for: " + towerUID);
 			transform.name = towerUID + ".select";
 			tower = GameObject.Find (towerUID).GetComponent<Tower> ();
 			tNI = tower.GetComponent<NetworkIdentity> ();
@@ -25,17 +27,25 @@ namespace BlobWars {
 		
 		// Update is called once per frame
 		void Update () {
+
 			// If we're not on the server
 			if (tNI.isLocalPlayer) {
 				// Move the selector ball correspondigly 
 				RaycastHit hit;
-				Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
-
+				Ray ray;
+				if (editorDebug) {
+					ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+				} else {
+					ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0)) ;
+				}
 				//get mouse position on plane and hit
 				if (Physics.Raycast (ray, out hit)) {
 					Vector3 location = new Vector3 (hit.point.x, hit.point.y, hit.point.z);
 
-					if (hit.transform.GetComponent<Blob>() != null) {
+					if (hit.transform.GetComponent<Blob>() != null || 
+					    hit.transform.GetComponentInParent<Blob>() != null) {
+						Debug.Log (hit.transform.gameObject.GetComponent<Blob>());
+						Debug.Log ("Found something to select");
 						location.y += 10;
 					}
 					transform.position = location;
@@ -48,9 +58,15 @@ namespace BlobWars {
 
 		}
 		// If someone clicked
+
 		public void TriggerSelect() {
 			RaycastHit hit;
-			Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
+			Ray ray;
+			if (editorDebug) {
+				ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+			} else {
+				ray = Camera.main.ViewportPointToRay (new Vector3 (0.5F, 0.5F, 0));
+			}
 			// Throw a ray
 			if (Physics.Raycast (ray, out hit)) {
 				Blob b = hit.transform.GetComponent<Blob> ();
