@@ -16,6 +16,7 @@ namespace BlobWars {
 
 		void Start () {
 			manager = GetComponent<NetworkManager> ();
+			imageTarget = null;
 		}
 
 		void Update() {

@@ -68,7 +68,6 @@ namespace BlobWars {
 			 syncDestination = transform.position;
 			// My commanding tower
 			tower = GameObject.Find (towerName);
-				Debug.Log ("Local Player is opening doors");
 			// The Object steps out of the tower
 			if (Vector3.Equals(stepOut,Vector3.zero)) {
 				if (tower.transform.position.z < 0) {
@@ -80,10 +79,10 @@ namespace BlobWars {
 			}
 			base.Start ();
 
-			// Make the object move out of the tower
-			
 			syncPos = transform.position;
 			syncRot = transform.rotation;
+
+			// Make the object move out of the tower
 			MoveTo (transform.position + stepOut);
 
 		}
@@ -96,46 +95,45 @@ namespace BlobWars {
 
 			GameObject enemyTower;
 			// For each Blob on the field
-			if (nextTime < Time.time) { 
+			if (nextTime < Time.time) {
+				nextTime = Time.time + attackSpeed;
+				// Only attack one target, once each shot
 				for (var d = 0; d  < Blobs.Length; d++) {
 					Blob blob = Blobs [d].GetComponent<Blob> ();
-					// Skip my own blobs
+					// Skip erroneous blobs. 
+					// Sometimes the algorithm checks not yet fully instantiated blobs, that do not yet have a towername
 					if (blob == null || blob.towerName == null) {
 						Debug.Log ("Error");
 						continue;
 					}
+					// Skip allied blobs
 					if (blob.towerName == towerName) {
 						continue;
 					} else {
-						Debug.Log ("Checking enemy position from " + uid + " to " + blob.uid + " " + Vector3.Distance (Blobs [d].transform.position, transform.position));
+
+						//Debug.Log ("Checking enemy position from " + uid + " to " + blob.uid + " " + Vector3.Distance (Blobs [d].transform.position, transform.position));
 						// Get the enemy tower if we don't know it already
 						enemyTower = blob.tower;
 						// If the blob is in range, attack blob.
 						if (Vector3.Distance (Blobs [d].transform.position, transform.position) <= range) {
-							// TODO: Move closer to enemy blob before attack
-							transform.LookAt (Blobs [d].transform.position);
-							
-							
-							slAnim.doAttack = true;	
-							GameObject aBall = gameObject.transform.FindChild("attackball").gameObject;
-							if (aBall != null) {
-								Debug.Log ("Found Ranged");
-								// TODO: Ranged attacks
+							Debug.Log ("Found Blob!");
 
+							transform.LookAt (Blobs [d].transform.position);
+							slAnim.doAttack = true;	
+
+							// First attempt at ranged attacks:
+							//GameObject aBall = gameObject.transform.FindChild("attackball").gameObject;
+							//if (aBall != null) {
 								//GameObject b= Instantiate((GameObject) aBall,aBall.transform.position,aBall.transform.rotation);
-							}
+							//}
 
 
 							// Damage is done here, including animation
 							// this would be the place to ranged attacks
 
-							nextTime = Time.time + attackSpeed;
 							aSource.PlayOneShot(atkAudio);
-							Debug.Log ("Causing Damage to Blob");
 							blob.CmdDamageObject (damage);
-							
-							break; // Why?
-						
+							break; // Break out of for loop after a Blob has been attacked
 						} // If no blobs are in range
 					else {
 							// Check if he's in range
@@ -149,16 +147,16 @@ namespace BlobWars {
 								// Damage is done here, including animation 
 								// this would be the place to ranged attacks
 								enemyTower.GetComponent<Tower> ().CmdDamageObject (damage);
+								break; // Break out of for loop after the tower has been attacked, so it doesn't try to attack the remaining blobs in the for loop.
 
-								break;
 							}
 
 
 						}
+
 					} 
 
 				}
-			
 			}
 		}
 

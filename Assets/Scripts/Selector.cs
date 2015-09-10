@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 
 namespace BlobWars {
@@ -15,14 +16,15 @@ namespace BlobWars {
 		private NetworkIdentity tNI;
 		// The last Object that was selected.
 		private GameObject lastSelection;
-		
-		private bool editorDebug = true;
 		// Gets spawned in the Tower.Start() methode.
 		void Start () {
 			Debug.Log ("Starting Local Selector for: " + towerUID);
 			transform.name = towerUID + ".select";
 			tower = GameObject.Find (towerUID).GetComponent<Tower> ();
 			tNI = tower.GetComponent<NetworkIdentity> ();
+
+			Button selBtn =  GameObject.Find("SelectButton").GetComponent<Button>();
+			selBtn.onClick.AddListener (() => {TriggerSelect();});
 		}
 		
 		// Update is called once per frame
@@ -33,7 +35,7 @@ namespace BlobWars {
 				// Move the selector ball correspondigly 
 				RaycastHit hit;
 				Ray ray;
-				if (editorDebug) {
+				if (Debug.isDebugBuild) {
 					ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 				} else {
 					ray = Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0)) ;
@@ -44,14 +46,14 @@ namespace BlobWars {
 
 					if (hit.transform.GetComponent<Blob>() != null || 
 					    hit.transform.GetComponentInParent<Blob>() != null) {
-						Debug.Log (hit.transform.gameObject.GetComponent<Blob>());
-						Debug.Log ("Found something to select");
+						//Debug.Log (hit.transform.gameObject.GetComponent<Blob>());
+						//Debug.Log ("Found something to select");
 						location.y += 10;
 					}
 					transform.position = location;
 				}
 				//trigger slecetion on click!
-				if (Input.GetKey ("mouse 0")) {
+				if (Debug.isDebugBuild && Input.GetKey ("mouse 0")) {
 					TriggerSelect ();
 				}
 			}

@@ -12,26 +12,28 @@ public class SlimeAnim : NetworkBehaviour {
 	public bool isWalking = false;
 	[SyncVar]
 	public bool doAttack = false;
-	[SyncVar]
-	public bool die = false;
-
+	private BlobWars.Blob script;
 	void Start () {
 		anim = GetComponent<Animator> ();
+		script = GetComponentInParent<BlobWars.Blob> ();
 	}
 
 	void Update () {
-		if (doAttack) {
-			anim.SetTrigger("Attack");
-			doAttack = false;
-		}
-		anim.SetBool ("IsWalking", isWalking);
-
-		if (die) {
-			for(int i = 0; i < deactivateOnDeathObjects.Length; i++) {
-				deactivateOnDeathObjects[i].SetActive(false);
+		if (script == null || script.tower.GetComponent<NetworkIdentity>().isClient
+		    || script.tower.GetComponent<NetworkIdentity>().isServer) {
+			if (doAttack) {
+				Debug.Log ("Attacking");
+				anim.SetTrigger ("Attack");
+				doAttack = false;
 			}
-			deathParticleSystem.Play();
-			die = false;
+			anim.SetBool ("IsWalking", isWalking);
+
+			if (script != null && script.currentHealth <= 0) {
+				for (int i = 0; i < deactivateOnDeathObjects.Length; i++) {
+					deactivateOnDeathObjects [i].SetActive (false);
+				}
+				deathParticleSystem.Play ();
+			}
 		}
 	}
 }

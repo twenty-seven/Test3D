@@ -21,50 +21,32 @@ namespace BlobWars {
 		//Audio
 		public AudioClip openDoorAudio;
 		void Start () {
+			currentHealth = maxHealth;
 			GetComponent<HealthObject>().currentHealth = GetComponent<HealthObject>().maxHealth;
 			// Create 'unique' name for tower
 			uid = "Player" + GetComponent<NetworkIdentity>().netId;
 			gameObject.transform.name = uid;
-			//Camera serverCam = GameObject.Find ("Server Camera").GetComponent<Camera>();
-			//Camera clientCam = GameObject.Find ("Client Camera").GetComponent<Camera>();
-			// Handle Cameras for host
-			/*if (isServer && isClient) {
-				if (serverCam != null) {
-					serverCam.enabled = true;
-				}
-				if (clientCam != null) {
-					clientCam.enabled = false;
-				}
-			} else { // for client
-				if (serverCam != null) {
-					serverCam.enabled = false;
-				}
-				if (clientCam != null) {
-					clientCam.enabled = true;
-				}
-			}*/
 			spawnDelay = Time.time + spawnDelayValue;
-			if (isLocalPlayer) {
-				Debug.Log ("Local Tower Spawned." + transform.name);
-				selector = (GameObject)Instantiate (Selector, transform.position, Quaternion.identity);
-				selector.GetComponent<Selector> ().towerUID = transform.name;
-				GameObject imgTarget = GameObject.Find ("ImageTarget");
-				if (imgTarget != null) {
-					selector.transform.parent = imgTarget.transform;
-				}
+		 if (isLocalPlayer) {
+			Debug.Log ("Local Tower Spawned." + transform.name);
+			selector = (GameObject)Instantiate (Selector, transform.position, Quaternion.identity);
+			selector.GetComponent<Selector> ().towerUID = transform.name;
 
-
-				GameObject selectBtn = GameObject.Find ("selBtn");
-				if (selectBtn != null) {
-					selectBtn.GetComponent<Button> ().interactable = true;
-					// add selection trigger function to the button.
-					selectBtn.GetComponent<Button> ().onClick.AddListener (() => {
-						selector.GetComponent<Selector> ().TriggerSelect ();
-					});
-				}
-			} else {
-				Debug.Log ("Remote Tower Spawned.");
+			GameObject imgTarget = GameObject.Find ("ImageTarget");
+			if (imgTarget != null) {
+				selector.transform.parent = imgTarget.transform;
 			}
+
+			
+			GameObject selectBtn = GameObject.Find ("selBtn");
+			if (selectBtn != null) {
+				selectBtn.GetComponent<Button> ().interactable = true;
+				// add selection trigger function to the button.
+				selectBtn.GetComponent<Button> ().onClick.AddListener (() => {
+					selector.GetComponent<Selector> ().TriggerSelect ();
+				});
+			}
+		}
 			base.Start ();
 		}
 		
@@ -82,41 +64,13 @@ namespace BlobWars {
 				if (Time.time > spawnDelay) {
 					CmdSpawnSoldier (soldierTypeTester, transform.position);
 
-						GetComponent<Animator>().SetBool("DoorsOpen",true);
+					GetComponent<TowerAnim>().openDoors();
 					spawnDelay = Time.time + spawnDelayValue;
 				}
 
 			}
-
-			// If you click on your tower, a new unit spawns
-			// No Position synchronization necessary
-			/*if (Input.GetKeyDown("w")) {
-				//if(hitMe()) {
-				if (isLocalPlayer && Time.time > spawnDelay){
-					
-					spawnSoldier(0);
-					spawnDelay = Time.time + 2f;
-				}
-				//}
-			}
-			if (Input.GetKeyDown("a")) {
-				//if(hitMe()) {
-				if (isLocalPlayer && Time.time > spawnDelay){
-					
-					spawnSoldier(1);
-					spawnDelay = Time.time + 2f;
-				}
-			}
-			if (Input.GetKeyDown("s")) {
-				//if(hitMe()) {
-				if (isLocalPlayer && Time.time > spawnDelay){
-					
-					spawnSoldier(2);
-					spawnDelay = Time.time + 2f;
-				}
-				//}
-			}*/
 		}
+
 		// Spawns a soldier on the server
 		[Command]
 		void CmdSpawnSoldier(int type, Vector3 location) {
@@ -147,10 +101,14 @@ namespace BlobWars {
 					blob.transform.SetParent (imgTarget.transform);
 				}
 				numSoldiers++;
-
+				GetComponent<TowerAnim>().doorsOpen = true;
 				NetworkServer.Spawn (blob);
 			}
 			
+		}
+		void triggerDoor() {
+			//GetComponent<Animator> ().SetBool("DoorsOpen",true);
+			GetComponent<TowerAnim> ().openDoors ();
 		}
 		// In case a blob changes it's destination, the tower is used to 
 		// inform the Server about the changes
@@ -162,20 +120,6 @@ namespace BlobWars {
 		[Command]
 		void CmdTransmitDestination(string blobName, Vector3 destination) {
 			GameObject.Find (blobName).GetComponent<Blob> ().MoveTo (destination);
-		}
-		// Did that raycast hit me?
-		bool hitMe () {
-			RaycastHit hit;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast (ray, out hit)) {
-				if (hit.transform.CompareTag("Player")) {
-					if (hit.transform.GetComponent<NetworkIdentity>().isLocalPlayer) {
-						return true;
-					}
-				}
-			}
-			return false;
-			
 		}
 	}
 }
