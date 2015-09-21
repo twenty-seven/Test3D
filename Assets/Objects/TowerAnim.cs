@@ -48,7 +48,7 @@ public class TowerAnim : NetworkBehaviour {
 	bool broken18 = false;
 
 
-	Animator doorsAnim;
+	public Animator doorsAnim;
 	[SyncVar]
 	public bool doorsOpen = false;
 
@@ -73,7 +73,7 @@ public class TowerAnim : NetworkBehaviour {
 		break17Anim = transform.Find("middle_chip_7_Anim").GetComponent<Animator> ();
 		break18Anim = transform.Find("log_Anim").GetComponent<Animator> ();
 
-		doorsAnim = transform.Find("doors_Anim").GetComponent<Animator> ();
+		//doorsAnim = transform.Find("doors_Anim").GetComponent<Animator> ();
 		doorsAnim.SetBool("doorsOpen", false);
 		h = GetComponent<BlobWars.HealthObject> ();
 		maxTowerHealth = h.maxHealth;
@@ -84,7 +84,9 @@ public class TowerAnim : NetworkBehaviour {
 
 	bool opened = false;
 	public void openDoors() {
+
 		if (!opened) {
+			print ("open");
 			doorsAnim.SetBool ("doorsOpen", true);
 			opened = true;
 		}
@@ -92,6 +94,7 @@ public class TowerAnim : NetworkBehaviour {
 
 	public void closeDoors() {
 		if (opened) {
+			print ("close");
 			doorsAnim.SetBool ("doorsOpen", false);
 			opened = false;
 		}

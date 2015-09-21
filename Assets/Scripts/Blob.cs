@@ -68,6 +68,7 @@ namespace BlobWars {
 			 syncDestination = transform.position;
 			// My commanding tower
 			tower = GameObject.Find (towerName);
+			tower.GetComponent<TowerAnim> ().openDoors();
 			// The Object steps out of the tower
 			if (Vector3.Equals(stepOut,Vector3.zero)) {
 				if (tower.transform.position.z < 0) {
