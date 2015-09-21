@@ -15,6 +15,8 @@ namespace BlobWars {
 		//private Quaternion offset = new Quaternion ();
 		// The minimal distance between the current position and destination, to trigger movement.
 		public double minDistance;
+		// Number of seconds to wait with door closing
+		public int doorOpenSeconds;
 		// Distance the Blob walks after he is spawned (walking out of the tower)
 		public Vector3 stepOut = Vector3.zero;
 		// Differentiate between a selected Blob and an unselected Blob (navigation)
@@ -85,9 +87,13 @@ namespace BlobWars {
 
 			// Make the object move out of the tower
 			MoveTo (transform.position + stepOut);
+			StartCoroutine(WaitWithDoorAnimation ());
 
 		}
-
+		IEnumerator WaitWithDoorAnimation() {
+			yield return new WaitForSeconds(doorOpenSeconds);
+			tower.GetComponent<TowerAnim> ().closeDoors ();
+		}
 		// Maybe check for obstacle here too or create similar command function
 		[Command]
 		void CmdCheckForEnemies () {
@@ -104,7 +110,6 @@ namespace BlobWars {
 					// Skip erroneous blobs. 
 					// Sometimes the algorithm checks not yet fully instantiated blobs, that do not yet have a towername
 					if (blob == null || blob.towerName == null) {
-						Debug.Log ("Error");
 						continue;
 					}
 					// Skip allied blobs
@@ -117,7 +122,6 @@ namespace BlobWars {
 						enemyTower = blob.tower;
 						// If the blob is in range, attack blob.
 						if (Vector3.Distance (Blobs [d].transform.position, transform.position) <= range) {
-							Debug.Log ("Found Blob!");
 
 							transform.LookAt (Blobs [d].transform.position);
 							slAnim.doAttack = true;	
@@ -180,9 +184,6 @@ namespace BlobWars {
 		// Checks whether it's the movmenet out of the tower and handles the animation.
 		// Turns on Walking ANimation and sets new destination, which triggers movement from the update function.
 		public void MoveTo(Vector3 location) {
-			if (transform.position == tower.transform.position && location == (tower.transform.position + stepOut)) {
-				tower.GetComponent<TowerAnim> ().doorsOpen = false;
-			}
 			syncDestination = location;
 		}
 
@@ -266,12 +267,6 @@ namespace BlobWars {
 				transform.position = syncPos;
 				//slAnim.isWalking = false;
 			}
-		}
-
-		void AnimationPositionFix(){
-			//apply movement done in animation to actual position.
-			//transform.position += transform.forward * GetComponent<Animator> ().deltaPosition.magnitude;
-			//transform.position += (syncDestination - transform.position).normalized * speed * Mathf.Abs(GetComponent<Animator>().deltaPosition.magnitude);
 		}
 
 		//trigger this via animation event

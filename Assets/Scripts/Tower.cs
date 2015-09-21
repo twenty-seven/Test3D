@@ -64,7 +64,6 @@ namespace BlobWars {
 				if (Time.time > spawnDelay) {
 					CmdSpawnSoldier (soldierTypeTester, transform.position);
 
-					GetComponent<TowerAnim>().openDoors();
 					spawnDelay = Time.time + spawnDelayValue;
 				}
 
@@ -101,15 +100,12 @@ namespace BlobWars {
 					blob.transform.SetParent (imgTarget.transform);
 				}
 				numSoldiers++;
-				GetComponent<TowerAnim>().doorsOpen = true;
+		
 				NetworkServer.Spawn (blob);
 			}
 			
 		}
-		void triggerDoor() {
-			//GetComponent<Animator> ().SetBool("DoorsOpen",true);
-			GetComponent<TowerAnim> ().openDoors ();
-		}
+
 		// In case a blob changes it's destination, the tower is used to 
 		// inform the Server about the changes
 		[Client]
